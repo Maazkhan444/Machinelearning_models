@@ -1,1 +1,700 @@
-{"metadata":{"kernelspec":{"language":"python","display_name":"Python 3","name":"python3"},"language_info":{"name":"python","version":"3.10.13","mimetype":"text/x-python","codemirror_mode":{"name":"ipython","version":3},"pygments_lexer":"ipython3","nbconvert_exporter":"python","file_extension":".py"},"kaggle":{"accelerator":"none","dataSources":[{"sourceId":6051848,"sourceType":"datasetVersion","datasetId":3462333}],"dockerImageVersionId":30684,"isInternetEnabled":false,"language":"python","sourceType":"notebook","isGpuEnabled":false}},"nbformat_minor":4,"nbformat":4,"cells":[{"cell_type":"code","source":"import numpy as np \nimport pandas as pd","metadata":{"_uuid":"8f2839f25d086af736a60e9eeb907d3b93b6e0e5","_cell_guid":"b1076dfc-b9ad-4769-8c92-a6c4dae69d19","execution":{"iopub.status.busy":"2024-04-17T16:27:05.308746Z","iopub.execute_input":"2024-04-17T16:27:05.309158Z","iopub.status.idle":"2024-04-17T16:27:05.314581Z","shell.execute_reply.started":"2024-04-17T16:27:05.309127Z","shell.execute_reply":"2024-04-17T16:27:05.313181Z"},"trusted":true},"execution_count":59,"outputs":[]},{"cell_type":"code","source":"dataframe = pd.read_csv(\"/kaggle/input/student-performance-multiple-linear-regression/Student_Performance.csv\")\n","metadata":{"execution":{"iopub.status.busy":"2024-04-17T16:27:06.326614Z","iopub.execute_input":"2024-04-17T16:27:06.327536Z","iopub.status.idle":"2024-04-17T16:27:06.348080Z","shell.execute_reply.started":"2024-04-17T16:27:06.327472Z","shell.execute_reply":"2024-04-17T16:27:06.346843Z"},"trusted":true},"execution_count":60,"outputs":[]},{"cell_type":"code","source":"dataframe.head()","metadata":{"execution":{"iopub.status.busy":"2024-04-17T16:27:07.364911Z","iopub.execute_input":"2024-04-17T16:27:07.365382Z","iopub.status.idle":"2024-04-17T16:27:07.380962Z","shell.execute_reply.started":"2024-04-17T16:27:07.365350Z","shell.execute_reply":"2024-04-17T16:27:07.379388Z"},"trusted":true},"execution_count":61,"outputs":[{"execution_count":61,"output_type":"execute_result","data":{"text/plain":"   Hours Studied  Previous Scores Extracurricular Activities  Sleep Hours  \\\n0              7               99                        Yes            9   \n1              4               82                         No            4   \n2              8               51                        Yes            7   \n3              5               52                        Yes            5   \n4              7               75                         No            8   \n\n   Sample Question Papers Practiced  Performance Index  \n0                                 1               91.0  \n1                                 2               65.0  \n2                                 2               45.0  \n3                                 2               36.0  \n4                                 5               66.0  ","text/html":"<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>Hours Studied</th>\n      <th>Previous Scores</th>\n      <th>Extracurricular Activities</th>\n      <th>Sleep Hours</th>\n      <th>Sample Question Papers Practiced</th>\n      <th>Performance Index</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>7</td>\n      <td>99</td>\n      <td>Yes</td>\n      <td>9</td>\n      <td>1</td>\n      <td>91.0</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>4</td>\n      <td>82</td>\n      <td>No</td>\n      <td>4</td>\n      <td>2</td>\n      <td>65.0</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>8</td>\n      <td>51</td>\n      <td>Yes</td>\n      <td>7</td>\n      <td>2</td>\n      <td>45.0</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>5</td>\n      <td>52</td>\n      <td>Yes</td>\n      <td>5</td>\n      <td>2</td>\n      <td>36.0</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>7</td>\n      <td>75</td>\n      <td>No</td>\n      <td>8</td>\n      <td>5</td>\n      <td>66.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>"},"metadata":{}}]},{"cell_type":"code","source":"dataframe.columns","metadata":{"execution":{"iopub.status.busy":"2024-04-17T16:27:08.707620Z","iopub.execute_input":"2024-04-17T16:27:08.708031Z","iopub.status.idle":"2024-04-17T16:27:08.716215Z","shell.execute_reply.started":"2024-04-17T16:27:08.708003Z","shell.execute_reply":"2024-04-17T16:27:08.714942Z"},"trusted":true},"execution_count":62,"outputs":[{"execution_count":62,"output_type":"execute_result","data":{"text/plain":"Index(['Hours Studied', 'Previous Scores', 'Extracurricular Activities',\n       'Sleep Hours', 'Sample Question Papers Practiced', 'Performance Index'],\n      dtype='object')"},"metadata":{}}]},{"cell_type":"code","source":"df = dataframe.head(300)","metadata":{"execution":{"iopub.status.busy":"2024-04-17T16:27:10.565000Z","iopub.execute_input":"2024-04-17T16:27:10.565370Z","iopub.status.idle":"2024-04-17T16:27:10.571024Z","shell.execute_reply.started":"2024-04-17T16:27:10.565344Z","shell.execute_reply":"2024-04-17T16:27:10.569834Z"},"trusted":true},"execution_count":63,"outputs":[]},{"cell_type":"code","source":"df.head()","metadata":{"execution":{"iopub.status.busy":"2024-04-17T16:27:12.035201Z","iopub.execute_input":"2024-04-17T16:27:12.035660Z","iopub.status.idle":"2024-04-17T16:27:12.051204Z","shell.execute_reply.started":"2024-04-17T16:27:12.035628Z","shell.execute_reply":"2024-04-17T16:27:12.049800Z"},"trusted":true},"execution_count":64,"outputs":[{"execution_count":64,"output_type":"execute_result","data":{"text/plain":"   Hours Studied  Previous Scores Extracurricular Activities  Sleep Hours  \\\n0              7               99                        Yes            9   \n1              4               82                         No            4   \n2              8               51                        Yes            7   \n3              5               52                        Yes            5   \n4              7               75                         No            8   \n\n   Sample Question Papers Practiced  Performance Index  \n0                                 1               91.0  \n1                                 2               65.0  \n2                                 2               45.0  \n3                                 2               36.0  \n4                                 5               66.0  ","text/html":"<div>\n<style scoped>\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n    .dataframe tbody tr th {\n        vertical-align: top;\n    }\n\n    .dataframe thead th {\n        text-align: right;\n    }\n</style>\n<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>Hours Studied</th>\n      <th>Previous Scores</th>\n      <th>Extracurricular Activities</th>\n      <th>Sleep Hours</th>\n      <th>Sample Question Papers Practiced</th>\n      <th>Performance Index</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>0</th>\n      <td>7</td>\n      <td>99</td>\n      <td>Yes</td>\n      <td>9</td>\n      <td>1</td>\n      <td>91.0</td>\n    </tr>\n    <tr>\n      <th>1</th>\n      <td>4</td>\n      <td>82</td>\n      <td>No</td>\n      <td>4</td>\n      <td>2</td>\n      <td>65.0</td>\n    </tr>\n    <tr>\n      <th>2</th>\n      <td>8</td>\n      <td>51</td>\n      <td>Yes</td>\n      <td>7</td>\n      <td>2</td>\n      <td>45.0</td>\n    </tr>\n    <tr>\n      <th>3</th>\n      <td>5</td>\n      <td>52</td>\n      <td>Yes</td>\n      <td>5</td>\n      <td>2</td>\n      <td>36.0</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>7</td>\n      <td>75</td>\n      <td>No</td>\n      <td>8</td>\n      <td>5</td>\n      <td>66.0</td>\n    </tr>\n  </tbody>\n</table>\n</div>"},"metadata":{}}]},{"cell_type":"code","source":"num_rows = len(df)\nnum_rows","metadata":{"execution":{"iopub.status.busy":"2024-04-17T16:27:13.593420Z","iopub.execute_input":"2024-04-17T16:27:13.593827Z","iopub.status.idle":"2024-04-17T16:27:13.601150Z","shell.execute_reply.started":"2024-04-17T16:27:13.593799Z","shell.execute_reply":"2024-04-17T16:27:13.599809Z"},"trusted":true},"execution_count":65,"outputs":[{"execution_count":65,"output_type":"execute_result","data":{"text/plain":"300"},"metadata":{}}]},{"cell_type":"code","source":"num_rows = len(df)\nnum_train = int(0.8 * num_rows)\nnum_test = num_rows - num_train\n\n# Splitting the dataset \ntrain_data = df[:num_train]\ntest_data = df[num_train:]\n\n\nX_train = train_data[['Hours Studied']]  \ny_train = train_data['Performance Index']  \n\n# Splitting features (X) and target variable (y) for testing data\nX_test = test_data[['Hours Studied']]  \ny_test = test_data['Performance Index']  \n\nprint(\"X_train shape:\", X_train.shape)\nprint(\"y_train shape:\", y_train.shape)\nprint(\"X_test shape:\", X_test.shape)\nprint(\"y_test shape:\", y_test.shape)\n\n\nprint(\"Training data shape:\", train_data.shape)\nprint(\"Testing data shape:\", test_data.shape)\n","metadata":{"execution":{"iopub.status.busy":"2024-04-17T16:27:14.918492Z","iopub.execute_input":"2024-04-17T16:27:14.918886Z","iopub.status.idle":"2024-04-17T16:27:14.930151Z","shell.execute_reply.started":"2024-04-17T16:27:14.918858Z","shell.execute_reply":"2024-04-17T16:27:14.928750Z"},"trusted":true},"execution_count":66,"outputs":[{"name":"stdout","text":"X_train shape: (240, 1)\ny_train shape: (240,)\nX_test shape: (60, 1)\ny_test shape: (60,)\nTraining data shape: (240, 6)\nTesting data shape: (60, 6)\n","output_type":"stream"}]},{"cell_type":"code","source":"# Min-Max Normalization function\ndef min_max_normalize(data):\n    min_val = min(data)\n    max_val = max(data)\n    normalized_data = (data - min_val) / (max_val - min_val)\n    return normalized_data\n\ntrain_data_copy = train_data.copy()\ntest_data_copy = test_data.copy()\n\ntrain_data_copy['Hours Studied'] = min_max_normalize(train_data_copy['Hours Studied'])\ntest_data_copy['Hours Studied'] = min_max_normalize(test_data_copy['Hours Studied'])\n","metadata":{"execution":{"iopub.status.busy":"2024-04-17T16:27:16.394998Z","iopub.execute_input":"2024-04-17T16:27:16.395869Z","iopub.status.idle":"2024-04-17T16:27:16.405912Z","shell.execute_reply.started":"2024-04-17T16:27:16.395832Z","shell.execute_reply":"2024-04-17T16:27:16.404665Z"},"trusted":true},"execution_count":67,"outputs":[]},{"cell_type":"code","source":"theta = 29.19","metadata":{"execution":{"iopub.status.busy":"2024-04-17T16:27:17.864622Z","iopub.execute_input":"2024-04-17T16:27:17.865085Z","iopub.status.idle":"2024-04-17T16:27:17.870080Z","shell.execute_reply.started":"2024-04-17T16:27:17.865054Z","shell.execute_reply":"2024-04-17T16:27:17.869307Z"},"trusted":true},"execution_count":68,"outputs":[]},{"cell_type":"code","source":"class LinearRegressionGD:\n    def __init__(self, learning_rate=0.01, epochs=100):\n        self.learning_rate = learning_rate\n        self.epochs = epochs\n        self.theta = None\n        self.theta_zero = None\n    \n    def fit(self, X, y):\n\n        X = np.array(X)\n        y = np.array(y)\n\n        # Initialize theta and theta_zero\n        self.theta = np.zeros(X.shape[1])  # Initialize theta with zeros\n        self.theta_zero = 0  # Initialize theta_zero with zero\n\n        # Perform gradient descent\n        for _ in range(self.epochs):\n            # Predictions\n            y_pred = np.matmul(X, self.theta) + self.theta_zero\n\n            # Calculate gradients\n            d_theta = -(2 / len(X)) * np.matmul(X.T, (y - y_pred))\n            d_theta_zero = -(2 / len(X)) * np.sum(y - y_pred)\n\n            # Update parameters\n            self.theta -= self.learning_rate * d_theta\n            self.theta_zero -= self.learning_rate * d_theta_zero\n\n    def predict(self, X):\n        print(np.dot(X, self.theta) + self.theta_zero)\n","metadata":{"execution":{"iopub.status.busy":"2024-04-17T16:27:19.514029Z","iopub.execute_input":"2024-04-17T16:27:19.514496Z","iopub.status.idle":"2024-04-17T16:27:19.525869Z","shell.execute_reply.started":"2024-04-17T16:27:19.514464Z","shell.execute_reply":"2024-04-17T16:27:19.524558Z"},"trusted":true},"execution_count":69,"outputs":[]},{"cell_type":"code","source":"model = LinearRegressionGD(learning_rate=0.01, epochs=100)\nmodel.fit(X_train, y_train)\n","metadata":{"execution":{"iopub.status.busy":"2024-04-17T16:27:22.302359Z","iopub.execute_input":"2024-04-17T16:27:22.302752Z","iopub.status.idle":"2024-04-17T16:27:22.315965Z","shell.execute_reply.started":"2024-04-17T16:27:22.302708Z","shell.execute_reply":"2024-04-17T16:27:22.314593Z"},"trusted":true},"execution_count":70,"outputs":[]},{"cell_type":"code","source":"y_pred = model.predict(X_test)\n","metadata":{"execution":{"iopub.status.busy":"2024-04-17T16:27:24.151867Z","iopub.execute_input":"2024-04-17T16:27:24.152314Z","iopub.status.idle":"2024-04-17T16:27:24.160322Z","shell.execute_reply.started":"2024-04-17T16:27:24.152282Z","shell.execute_reply":"2024-04-17T16:27:24.158668Z"},"trusted":true},"execution_count":71,"outputs":[{"name":"stdout","text":"[56.61352959 35.635127   77.59193218 42.62792786 21.64952527 42.62792786\n 21.64952527 49.62072872 42.62792786 70.59913132 70.59913132 63.60633045\n 35.635127   21.64952527 21.64952527 35.635127   56.61352959 63.60633045\n 56.61352959 56.61352959 56.61352959 35.635127   56.61352959 70.59913132\n 28.64232613 49.62072872 21.64952527 21.64952527 49.62072872 35.635127\n 42.62792786 35.635127   21.64952527 21.64952527 49.62072872 56.61352959\n 35.635127   77.59193218 49.62072872 70.59913132 21.64952527 49.62072872\n 35.635127   21.64952527 42.62792786 49.62072872 63.60633045 21.64952527\n 35.635127   28.64232613 77.59193218 56.61352959 35.635127   70.59913132\n 70.59913132 28.64232613 56.61352959 63.60633045 28.64232613 28.64232613]\n","output_type":"stream"}]}]}
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "5f0be605",
+   "metadata": {
+    "_cell_guid": "b1076dfc-b9ad-4769-8c92-a6c4dae69d19",
+    "_uuid": "8f2839f25d086af736a60e9eeb907d3b93b6e0e5",
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:08.898828Z",
+     "iopub.status.busy": "2024-04-17T16:32:08.898463Z",
+     "iopub.status.idle": "2024-04-17T16:32:09.879701Z",
+     "shell.execute_reply": "2024-04-17T16:32:09.878524Z"
+    },
+    "papermill": {
+     "duration": 0.990075,
+     "end_time": "2024-04-17T16:32:09.882320",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:08.892245",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import numpy as np \n",
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "5154f5fc",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:09.892334Z",
+     "iopub.status.busy": "2024-04-17T16:32:09.891805Z",
+     "iopub.status.idle": "2024-04-17T16:32:09.922825Z",
+     "shell.execute_reply": "2024-04-17T16:32:09.921792Z"
+    },
+    "papermill": {
+     "duration": 0.038951,
+     "end_time": "2024-04-17T16:32:09.925546",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:09.886595",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "dataframe = pd.read_csv(\"/kaggle/input/student-performance-multiple-linear-regression/Student_Performance.csv\")\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "620d8394",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:09.935507Z",
+     "iopub.status.busy": "2024-04-17T16:32:09.934460Z",
+     "iopub.status.idle": "2024-04-17T16:32:09.960362Z",
+     "shell.execute_reply": "2024-04-17T16:32:09.959210Z"
+    },
+    "papermill": {
+     "duration": 0.033205,
+     "end_time": "2024-04-17T16:32:09.962722",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:09.929517",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Hours Studied</th>\n",
+       "      <th>Previous Scores</th>\n",
+       "      <th>Extracurricular Activities</th>\n",
+       "      <th>Sleep Hours</th>\n",
+       "      <th>Sample Question Papers Practiced</th>\n",
+       "      <th>Performance Index</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>7</td>\n",
+       "      <td>99</td>\n",
+       "      <td>Yes</td>\n",
+       "      <td>9</td>\n",
+       "      <td>1</td>\n",
+       "      <td>91.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>4</td>\n",
+       "      <td>82</td>\n",
+       "      <td>No</td>\n",
+       "      <td>4</td>\n",
+       "      <td>2</td>\n",
+       "      <td>65.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>8</td>\n",
+       "      <td>51</td>\n",
+       "      <td>Yes</td>\n",
+       "      <td>7</td>\n",
+       "      <td>2</td>\n",
+       "      <td>45.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>5</td>\n",
+       "      <td>52</td>\n",
+       "      <td>Yes</td>\n",
+       "      <td>5</td>\n",
+       "      <td>2</td>\n",
+       "      <td>36.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>7</td>\n",
+       "      <td>75</td>\n",
+       "      <td>No</td>\n",
+       "      <td>8</td>\n",
+       "      <td>5</td>\n",
+       "      <td>66.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   Hours Studied  Previous Scores Extracurricular Activities  Sleep Hours  \\\n",
+       "0              7               99                        Yes            9   \n",
+       "1              4               82                         No            4   \n",
+       "2              8               51                        Yes            7   \n",
+       "3              5               52                        Yes            5   \n",
+       "4              7               75                         No            8   \n",
+       "\n",
+       "   Sample Question Papers Practiced  Performance Index  \n",
+       "0                                 1               91.0  \n",
+       "1                                 2               65.0  \n",
+       "2                                 2               45.0  \n",
+       "3                                 2               36.0  \n",
+       "4                                 5               66.0  "
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dataframe.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "e30dc46c",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:09.973403Z",
+     "iopub.status.busy": "2024-04-17T16:32:09.972533Z",
+     "iopub.status.idle": "2024-04-17T16:32:09.978715Z",
+     "shell.execute_reply": "2024-04-17T16:32:09.977937Z"
+    },
+    "papermill": {
+     "duration": 0.013698,
+     "end_time": "2024-04-17T16:32:09.980691",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:09.966993",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Index(['Hours Studied', 'Previous Scores', 'Extracurricular Activities',\n",
+       "       'Sleep Hours', 'Sample Question Papers Practiced', 'Performance Index'],\n",
+       "      dtype='object')"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "dataframe.columns"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "7e069339",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:09.991123Z",
+     "iopub.status.busy": "2024-04-17T16:32:09.990428Z",
+     "iopub.status.idle": "2024-04-17T16:32:09.994478Z",
+     "shell.execute_reply": "2024-04-17T16:32:09.993757Z"
+    },
+    "papermill": {
+     "duration": 0.011592,
+     "end_time": "2024-04-17T16:32:09.996502",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:09.984910",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "df = dataframe.head(300)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "71da0816",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:10.007405Z",
+     "iopub.status.busy": "2024-04-17T16:32:10.006754Z",
+     "iopub.status.idle": "2024-04-17T16:32:10.018197Z",
+     "shell.execute_reply": "2024-04-17T16:32:10.017060Z"
+    },
+    "papermill": {
+     "duration": 0.019324,
+     "end_time": "2024-04-17T16:32:10.020342",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:10.001018",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Hours Studied</th>\n",
+       "      <th>Previous Scores</th>\n",
+       "      <th>Extracurricular Activities</th>\n",
+       "      <th>Sleep Hours</th>\n",
+       "      <th>Sample Question Papers Practiced</th>\n",
+       "      <th>Performance Index</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>7</td>\n",
+       "      <td>99</td>\n",
+       "      <td>Yes</td>\n",
+       "      <td>9</td>\n",
+       "      <td>1</td>\n",
+       "      <td>91.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>4</td>\n",
+       "      <td>82</td>\n",
+       "      <td>No</td>\n",
+       "      <td>4</td>\n",
+       "      <td>2</td>\n",
+       "      <td>65.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>8</td>\n",
+       "      <td>51</td>\n",
+       "      <td>Yes</td>\n",
+       "      <td>7</td>\n",
+       "      <td>2</td>\n",
+       "      <td>45.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>5</td>\n",
+       "      <td>52</td>\n",
+       "      <td>Yes</td>\n",
+       "      <td>5</td>\n",
+       "      <td>2</td>\n",
+       "      <td>36.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>7</td>\n",
+       "      <td>75</td>\n",
+       "      <td>No</td>\n",
+       "      <td>8</td>\n",
+       "      <td>5</td>\n",
+       "      <td>66.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   Hours Studied  Previous Scores Extracurricular Activities  Sleep Hours  \\\n",
+       "0              7               99                        Yes            9   \n",
+       "1              4               82                         No            4   \n",
+       "2              8               51                        Yes            7   \n",
+       "3              5               52                        Yes            5   \n",
+       "4              7               75                         No            8   \n",
+       "\n",
+       "   Sample Question Papers Practiced  Performance Index  \n",
+       "0                                 1               91.0  \n",
+       "1                                 2               65.0  \n",
+       "2                                 2               45.0  \n",
+       "3                                 2               36.0  \n",
+       "4                                 5               66.0  "
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "4a19d8fc",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:10.031102Z",
+     "iopub.status.busy": "2024-04-17T16:32:10.030359Z",
+     "iopub.status.idle": "2024-04-17T16:32:10.036793Z",
+     "shell.execute_reply": "2024-04-17T16:32:10.035836Z"
+    },
+    "papermill": {
+     "duration": 0.014211,
+     "end_time": "2024-04-17T16:32:10.038875",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:10.024664",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "300"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "num_rows = len(df)\n",
+    "num_rows"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "70d0f5f7",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:10.049979Z",
+     "iopub.status.busy": "2024-04-17T16:32:10.049226Z",
+     "iopub.status.idle": "2024-04-17T16:32:10.070410Z",
+     "shell.execute_reply": "2024-04-17T16:32:10.068734Z"
+    },
+    "papermill": {
+     "duration": 0.029723,
+     "end_time": "2024-04-17T16:32:10.073015",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:10.043292",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "X_train shape: (240, 1)\n",
+      "y_train shape: (240,)\n",
+      "X_test shape: (60, 1)\n",
+      "y_test shape: (60,)\n",
+      "Training data shape: (240, 6)\n",
+      "Testing data shape: (60, 6)\n"
+     ]
+    }
+   ],
+   "source": [
+    "num_rows = len(df)\n",
+    "num_train = int(0.8 * num_rows)\n",
+    "num_test = num_rows - num_train\n",
+    "\n",
+    "# Splitting the dataset \n",
+    "train_data = df[:num_train]\n",
+    "test_data = df[num_train:]\n",
+    "\n",
+    "\n",
+    "X_train = train_data[['Hours Studied']]  \n",
+    "y_train = train_data['Performance Index']  \n",
+    "\n",
+    "# Splitting features (X) and target variable (y) for testing data\n",
+    "X_test = test_data[['Hours Studied']]  \n",
+    "y_test = test_data['Performance Index']  \n",
+    "\n",
+    "print(\"X_train shape:\", X_train.shape)\n",
+    "print(\"y_train shape:\", y_train.shape)\n",
+    "print(\"X_test shape:\", X_test.shape)\n",
+    "print(\"y_test shape:\", y_test.shape)\n",
+    "\n",
+    "\n",
+    "print(\"Training data shape:\", train_data.shape)\n",
+    "print(\"Testing data shape:\", test_data.shape)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "2fe6dfe8",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:10.084648Z",
+     "iopub.status.busy": "2024-04-17T16:32:10.084204Z",
+     "iopub.status.idle": "2024-04-17T16:32:10.092635Z",
+     "shell.execute_reply": "2024-04-17T16:32:10.091417Z"
+    },
+    "papermill": {
+     "duration": 0.016808,
+     "end_time": "2024-04-17T16:32:10.094719",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:10.077911",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Min-Max Normalization function\n",
+    "def min_max_normalize(data):\n",
+    "    min_val = min(data)\n",
+    "    max_val = max(data)\n",
+    "    normalized_data = (data - min_val) / (max_val - min_val)\n",
+    "    return normalized_data\n",
+    "\n",
+    "train_data_copy = train_data.copy()\n",
+    "test_data_copy = test_data.copy()\n",
+    "\n",
+    "train_data_copy['Hours Studied'] = min_max_normalize(train_data_copy['Hours Studied'])\n",
+    "test_data_copy['Hours Studied'] = min_max_normalize(test_data_copy['Hours Studied'])\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "3eeb55cc",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:10.106525Z",
+     "iopub.status.busy": "2024-04-17T16:32:10.105898Z",
+     "iopub.status.idle": "2024-04-17T16:32:10.110002Z",
+     "shell.execute_reply": "2024-04-17T16:32:10.108962Z"
+    },
+    "papermill": {
+     "duration": 0.012892,
+     "end_time": "2024-04-17T16:32:10.112255",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:10.099363",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "theta = 29.19"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "7ce23c66",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:10.123546Z",
+     "iopub.status.busy": "2024-04-17T16:32:10.123128Z",
+     "iopub.status.idle": "2024-04-17T16:32:10.132220Z",
+     "shell.execute_reply": "2024-04-17T16:32:10.130867Z"
+    },
+    "papermill": {
+     "duration": 0.017731,
+     "end_time": "2024-04-17T16:32:10.134698",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:10.116967",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "class LinearRegressionGD:\n",
+    "    def __init__(self, learning_rate=0.01, epochs=100):\n",
+    "        self.learning_rate = learning_rate\n",
+    "        self.epochs = epochs\n",
+    "        self.theta = None\n",
+    "        self.theta_zero = None\n",
+    "    \n",
+    "    def fit(self, X, y):\n",
+    "\n",
+    "        X = np.array(X)\n",
+    "        y = np.array(y)\n",
+    "\n",
+    "        # Initialize theta and theta_zero\n",
+    "        self.theta = np.zeros(X.shape[1])  # Initialize theta with zeros\n",
+    "        self.theta_zero = 0  # Initialize theta_zero with zero\n",
+    "\n",
+    "        # Perform gradient descent\n",
+    "        for _ in range(self.epochs):\n",
+    "            # Predictions\n",
+    "            y_pred = np.matmul(X, self.theta) + self.theta_zero\n",
+    "\n",
+    "            # Calculate gradients\n",
+    "            d_theta = -(2 / len(X)) * np.matmul(X.T, (y - y_pred))\n",
+    "            d_theta_zero = -(2 / len(X)) * np.sum(y - y_pred)\n",
+    "\n",
+    "            # Update parameters\n",
+    "            self.theta -= self.learning_rate * d_theta\n",
+    "            self.theta_zero -= self.learning_rate * d_theta_zero\n",
+    "\n",
+    "    def predict(self, X):\n",
+    "        print(np.dot(X, self.theta) + self.theta_zero)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "6dd441b1",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:10.146126Z",
+     "iopub.status.busy": "2024-04-17T16:32:10.145513Z",
+     "iopub.status.idle": "2024-04-17T16:32:10.152867Z",
+     "shell.execute_reply": "2024-04-17T16:32:10.152033Z"
+    },
+    "papermill": {
+     "duration": 0.015661,
+     "end_time": "2024-04-17T16:32:10.155033",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:10.139372",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "model = LinearRegressionGD(learning_rate=0.01, epochs=100)\n",
+    "model.fit(X_train, y_train)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "991498e0",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-04-17T16:32:10.166545Z",
+     "iopub.status.busy": "2024-04-17T16:32:10.165818Z",
+     "iopub.status.idle": "2024-04-17T16:32:10.173704Z",
+     "shell.execute_reply": "2024-04-17T16:32:10.172818Z"
+    },
+    "papermill": {
+     "duration": 0.016086,
+     "end_time": "2024-04-17T16:32:10.175874",
+     "exception": false,
+     "start_time": "2024-04-17T16:32:10.159788",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[56.61352959 35.635127   77.59193218 42.62792786 21.64952527 42.62792786\n",
+      " 21.64952527 49.62072872 42.62792786 70.59913132 70.59913132 63.60633045\n",
+      " 35.635127   21.64952527 21.64952527 35.635127   56.61352959 63.60633045\n",
+      " 56.61352959 56.61352959 56.61352959 35.635127   56.61352959 70.59913132\n",
+      " 28.64232613 49.62072872 21.64952527 21.64952527 49.62072872 35.635127\n",
+      " 42.62792786 35.635127   21.64952527 21.64952527 49.62072872 56.61352959\n",
+      " 35.635127   77.59193218 49.62072872 70.59913132 21.64952527 49.62072872\n",
+      " 35.635127   21.64952527 42.62792786 49.62072872 63.60633045 21.64952527\n",
+      " 35.635127   28.64232613 77.59193218 56.61352959 35.635127   70.59913132\n",
+      " 70.59913132 28.64232613 56.61352959 63.60633045 28.64232613 28.64232613]\n"
+     ]
+    }
+   ],
+   "source": [
+    "y_pred = model.predict(X_test)\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "datasetId": 3462333,
+     "sourceId": 6051848,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 30684,
+   "isGpuEnabled": false,
+   "isInternetEnabled": false,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.13"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 4.568287,
+   "end_time": "2024-04-17T16:32:10.599632",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2024-04-17T16:32:06.031345",
+   "version": "2.5.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
